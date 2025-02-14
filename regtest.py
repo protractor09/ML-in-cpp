@@ -1,9 +1,11 @@
 import numpy as np
+import mmap
+import os
 
-a=np.array([1,2,3,4,5,6,7,8])
-b=np.array([8,7,6,5,4,3,2,1])
+size = 4 * 100  # 100 float values (4 bytes each)
+shm_file = "shared_mem.bin"
 
-# Save as binary file
-a.tofile("array.bin")
-b.tofile("array.bin")
-
+# Create a NumPy array and write to shared memory
+arr = np.arange(-5,5,0.2, dtype=np.float32)
+with open(shm_file, "wb") as f:
+    f.write(arr.tobytes())  # Store in binary format

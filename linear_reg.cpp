@@ -1,8 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 using namespace std;
-
+using namespace py = pybind11;
 class reg{
     vector <float> x,y;
     float coeff,const_term,sum_xy,sum_x,sum_y,sum_x_sq,sum_y_sq;
@@ -70,20 +72,42 @@ public:
     }
 };
 
+reg r;
 
-int main(){
-
-    reg r;
+// Function to add two NumPy arrays
+py::array_t<float> take_inp(py::array_t<float> arr1, py::array_t<float> arr2) {
+    auto buf1 = arr1.request(), buf2 = arr2.request();
 
     vector<float>x;
     vector<float>y;
 
-    std::ifstream file("array.bin", std::ios::binary);
-    std::vector<float> data((std::istreambuf_iterator<char>(file)), {});
+    if (buf1.size != buf2.size) {
+        throw std::runtime_error("Arrays must be the same size!");
+    }
 
-   
-    r.inp(y,x);
+    float* ptr1 = (float*)buf1.ptr;
+    float* ptr2 = (float*)buf2.ptr;
+    
+    // Create an output array of the same size
+    py::array_t<float> result(buf1.size);
+    float* ptr_res = (float*)result.request().ptr;
+
+    for (ssize_t i = 0; i < buf1.size; i++) {
+        x.push_back(ptr1[i]);  
+        y.push_back(ptr2[i]);  // Element-wise addition
+    }
+
+    r.inp(x,y)
+    return result;
+}
+
+// Expose the function to Python
+PYBIND11_MODULE(my_module, m) {
+    m.def("add_arrays", &take_inp, "Adds two NumPy arrays");
+}
+
+
+int main(){
     r.PrintBestFittingLine();
-    r.predict(10);
     return 0;
 }
