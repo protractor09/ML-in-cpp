@@ -74,7 +74,7 @@ public:
 
 reg r;
 
-// Function to add two NumPy arrays
+// Function to take input in two float vectors and pass it to the inp method 
 py::array_t<float> take_inp(py::array_t<float> arr1, py::array_t<float> arr2) {
     auto buf1 = arr1.request(), buf2 = arr2.request();
 
@@ -94,16 +94,16 @@ py::array_t<float> take_inp(py::array_t<float> arr1, py::array_t<float> arr2) {
 
     for (ssize_t i = 0; i < buf1.size; i++) {
         x.push_back(ptr1[i]);  
-        y.push_back(ptr2[i]);  // Element-wise addition
+        y.push_back(ptr2[i]);
     }
 
-    r.inp(x,y)
-    return result;
+    r.inp(x,y);
+    return;
 }
 
 // Expose the function to Python
 PYBIND11_MODULE(my_module, m) {
-    m.def("add_arrays", &take_inp, "Adds two NumPy arrays");
+    m.def(&take_inp);
 }
 
 
