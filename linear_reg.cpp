@@ -24,7 +24,7 @@ public:
     }
 
     void calculate_const(){
-           float N = x.size();
+        float N = x.size();
         float num = (sum_y * sum_x_sq - sum_x * sum_xy);
         float den = (N * sum_x_sq - sum_x * sum_x);
         if(den==0){
